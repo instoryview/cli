@@ -65,3 +65,7 @@ To update, run `npm install --global instoryview@latest`. To uninstall, run `npm
 ## Links
 
 [Documentation](https://instoryview.com/docs/cli) · [Open API reference](https://instoryview.com/docs/reference) · [Follower tracker](https://instoryview.com) · [Free story viewer](https://instoryview.com/stories) · [Issues](https://github.com/instoryview/cli/issues) · support@instoryview.com
+
+## License
+
+[MIT](LICENSE)

@@ -1,6 +1,6 @@
 {
   "name": "instoryview",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Official Instoryview CLI: read tracked Instagram follower and following snapshots and detected changes, with budgeted online lookups. JSON output for scripts and AI agents.",
   "type": "module",
   "bin": {
@@ -10,7 +10,8 @@
     "bin",
     "src",
     "skill",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "engines": {
     "node": ">=20"
@@ -20,7 +21,7 @@
     "typecheck": "node --check src/cli.mjs"
   },
   "homepage": "https://instoryview.com/docs/cli",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "keywords": [
     "instagram",
     "follower-tracker",

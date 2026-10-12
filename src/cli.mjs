@@ -5,7 +5,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { readCredential, saveCredential, removeCredential } from './credentials.mjs';
 
-const VERSION = '0.2.0';
+const VERSION = '0.2.1';
 const SKILL_SOURCE = join(dirname(fileURLToPath(import.meta.url)), '..', 'skill');
 const DEFAULT_URL = 'https://instoryview.com/open-api/v1';
 const HELP = `Instoryview ${VERSION} — existing data first; online queries require a budget.
