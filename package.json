@@ -1,0 +1,39 @@
+{
+  "name": "instoryview",
+  "version": "0.1.0",
+  "description": "Read Instagram tracking snapshots and run explicitly budgeted public queries.",
+  "type": "module",
+  "bin": {
+    "instoryview": "bin/instoryview.mjs"
+  },
+  "files": [
+    "bin",
+    "src",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "typecheck": "node --check src/cli.mjs"
+  },
+  "homepage": "https://instoryview.com/docs/cli",
+  "license": "UNLICENSED",
+  "keywords": [
+    "instagram",
+    "follower-tracker",
+    "instoryview",
+    "cli"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/instoryview/cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/instoryview/cli/issues"
+  }
+}
