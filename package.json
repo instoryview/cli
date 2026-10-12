@@ -1,7 +1,7 @@
 {
   "name": "instoryview",
   "version": "0.2.0",
-  "description": "Read Instagram tracking snapshots and run explicitly budgeted public queries.",
+  "description": "Official Instoryview CLI: read tracked Instagram follower and following snapshots and detected changes, with budgeted online lookups. JSON output for scripts and AI agents.",
   "type": "module",
   "bin": {
     "instoryview": "bin/instoryview.mjs"
@@ -24,8 +24,14 @@
   "keywords": [
     "instagram",
     "follower-tracker",
+    "followers",
+    "following",
+    "unfollowers",
     "instoryview",
-    "cli"
+    "cli",
+    "mcp",
+    "agent-skill",
+    "open-api"
   ],
   "publishConfig": {
     "access": "public"

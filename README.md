@@ -1,6 +1,23 @@
 # Instoryview CLI
 
-Requires Node.js 20 or newer.
+[![npm](https://img.shields.io/npm/v/instoryview)](https://www.npmjs.com/package/instoryview) [![node](https://img.shields.io/node/v/instoryview)](https://nodejs.org)
+
+**The official command line for [Instoryview](https://instoryview.com), an Instagram follower and following tracker.** Read the accounts you track, their retained follower and following snapshots, and the changes Instoryview has detected, from a terminal, a script or an AI coding assistant. It is a thin client for the [Instoryview Open API](https://instoryview.com/docs/reference).
+
+## What it does
+
+- Lists the Instagram accounts you track and reads an account's profile totals.
+- Reads retained **follower** and **following** lists, one page at a time.
+- Reads **detected changes**: new followers, lost followers, new following and unfollowed accounts, for a date range and time zone you choose.
+- Runs an explicitly budgeted **online lookup** of a public account when you ask for one (`--live --max-credits N`). It never fetches more than one page and never starts tracking.
+- Prints machine-readable JSON (`--json`) with the API's `data` and `meta`, stable exit codes and recovery commands, so it is safe in scripts and agent workflows.
+- Installs the [Instoryview Skill](https://github.com/instoryview/skill) for Claude Code, Codex, Cursor and other assistants (`instoryview skill install`).
+
+## Requirements
+
+Node.js 20 or newer, and an API Key from [Developer settings](https://instoryview.com/settings/developers). You can also run it without installing: `npx instoryview tracking list`.
+
+## Quick start
 
 ```bash
 npm install --global instoryview
@@ -29,3 +46,22 @@ Successful `--json` output is the API's unmodified `{data, meta}` envelope on st
 Set `INSTORYVIEW_API_URL` only when deliberately connecting to another environment. It defaults to `https://instoryview.com/open-api/v1`; HTTPS is required except for loopback development URLs. Stored Keychain credentials are scoped to the API URL. Redirects are refused. Run `instoryview --help` for all options.
 
 To update, run `npm install --global instoryview@latest`. To uninstall, run `npm uninstall --global instoryview`.
+
+
+## FAQ
+
+**Is this an Instagram tool that needs my Instagram password?** No. It talks only to Instoryview with an Instoryview API Key. It never asks for, stores or transmits an Instagram login.
+
+**Does it show exactly when someone followed or unfollowed?** No. Instagram does not publish follow timestamps. Instoryview reports when a change was *detected* between two scans, which is not the exact time it happened. A scan with no detected change is not proof that nothing happened.
+
+**Does a read cost credits?** Reading existing data (`tracking list`, `account`, `followers`, `following`, `changes`) uses stored data and starts no collection. Only `--live` online lookups spend credits, always within the `--max-credits` you set.
+
+**Can it fetch every follower of any account?** No. Each command returns one page; online lookups are one budgeted page each. Instagram lists can also be partial, so the CLI shows `coverage` and `warnings` instead of claiming completeness.
+
+**Where is my Key stored?** On macOS in the System Keychain; elsewhere in `INSTORYVIEW_API_KEY`. No plaintext credential file is written. Revoke a Key any time in Developer settings.
+
+**Can an AI assistant use it?** Yes. Install the Skill (`instoryview skill install`) or connect the remote MCP server at `https://instoryview.com/mcp`. See [instoryview/skill](https://github.com/instoryview/skill) and [instoryview/chatgpt-plugin](https://github.com/instoryview/chatgpt-plugin).
+
+## Links
+
+[Documentation](https://instoryview.com/docs/cli) · [Open API reference](https://instoryview.com/docs/reference) · [Follower tracker](https://instoryview.com) · [Free story viewer](https://instoryview.com/stories) · [Issues](https://github.com/instoryview/cli/issues) · support@instoryview.com
