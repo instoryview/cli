@@ -346,7 +346,7 @@ function render(payload) {
     answer = `@${data?.username ?? 'unknown'}${data?.fullName ? `  ${data.fullName}` : ''}\nFollowers: ${data?.followerCount ?? 'unknown'}; following: ${data?.followingCount ?? 'unknown'}.`;
   answer += `\nSource: ${meta.source ?? 'unknown'}; as of: ${meta.asOf ?? 'see item timestamps'}; credits: ${meta.creditsUsed ?? 'pending'}.`;
   if (meta.coverage)
-    answer += `\nCoverage: ${meta.coverage}. Page size is not the Instagram follower total.`;
+    answer += `\nCoverage: ${meta.coverage}. This may not include every account on Instagram's list: it is what Instoryview could observe, and a page is not the Instagram total.`;
   if (meta.warnings?.length) answer += `\nWarnings: ${meta.warnings.join(', ')}.`;
   if (meta.nextCursor) answer += `\nNext cursor: ${meta.nextCursor}`;
   return `${answer}\n`;
