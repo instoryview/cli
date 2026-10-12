@@ -302,3 +302,19 @@ test('JSON auth login never prompts; non-macOS has environment-only credentials'
   assert.equal(prompts, 0);
   assert.equal(JSON.parse(outputs[0]).error.code, 'cli_error');
 });
+
+test('skill install copies the bundled Skill, refuses to overwrite, needs no credentials', async (t) => {
+  const home = await mkdtemp(join(tmpdir(), 'isv-skill-'));
+  t.after(() => rm(home, { recursive: true, force: true }));
+  const outputs = { stdout: '' };
+  const options = { env: {}, home, cwd: home, stdout: (v) => (outputs.stdout += v), stderr: () => {} };
+  assert.equal(await run(['skill', 'install', '--json'], options), 0);
+  const skill = await readFile(join(home, '.agents/skills/instoryview/SKILL.md'), 'utf8');
+  assert.match(skill, /^---\nname: instoryview/);
+  assert.equal(JSON.parse(outputs.stdout).path, join(home, '.agents/skills/instoryview'));
+  assert.equal(await run(['skill', 'install'], options), 2);
+  assert.equal(await run(['skill', 'install', '--force'], options), 0);
+  assert.equal(await run(['skill', 'install', '--target', 'claude', '--project'], options), 0);
+  await stat(join(home, '.claude/skills/instoryview/agents/openai.yaml'));
+  assert.equal(await run(['skill', 'install', '--target', 'bad'], options), 2);
+});

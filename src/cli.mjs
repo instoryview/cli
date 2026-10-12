@@ -1,15 +1,18 @@
 import { randomUUID, createHash } from 'node:crypto';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { cp, mkdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { readCredential, saveCredential, removeCredential } from './credentials.mjs';
 
-const VERSION = '0.1.0';
+const VERSION = '0.2.0';
+const SKILL_SOURCE = join(dirname(fileURLToPath(import.meta.url)), '..', 'skill');
 const DEFAULT_URL = 'https://instoryview.com/open-api/v1';
 const HELP = `Instoryview ${VERSION} — existing data first; online queries require a budget.
 
 Usage:
   instoryview auth login|status|logout
+  instoryview skill install [--target agents|claude] [--project] [--dir PATH] [--force]
   instoryview tracking list [--include-archived] [--limit N] [--cursor CURSOR]
   instoryview account USERNAME
   instoryview followers USERNAME [--limit N] [--cursor CURSOR]
@@ -43,8 +46,10 @@ const VALUE_FLAGS = new Set([
   'timezone',
   'max-credits',
   'idempotency-key',
+  'target',
+  'dir',
 ]);
-const BOOLEAN_FLAGS = new Set(['json', 'live', 'include-archived', 'help', 'version']);
+const BOOLEAN_FLAGS = new Set(['json', 'live', 'include-archived', 'help', 'version', 'project', 'force']);
 
 function parse(args) {
   const flags = {};
@@ -107,7 +112,7 @@ function buildRequest(positionals, flags) {
   const reads = ['account', 'followers', 'following', 'changes'];
   if (!(command === 'tracking' && operand === 'list') && !reads.includes(command))
     throw new CliError('Unknown command. See --help.');
-  const allowed = new Set(['json', 'help', 'version']);
+  const allowed = new Set(['json', 'help', 'version', 'project', 'force']);
   if (flags.live) {
     if (!['account', 'followers', 'following'].includes(command))
       throw new CliError('--live is supported only for account, followers, and following.');
@@ -347,6 +352,42 @@ function render(payload) {
   return `${answer}\n`;
 }
 
+async function installSkill(positionals, flags, io, json) {
+  const allowed = new Set(['json', 'target', 'project', 'dir', 'force']);
+  if (
+    positionals.length !== 2 ||
+    positionals[1] !== 'install' ||
+    Object.keys(flags).some((flag) => !allowed.has(flag))
+  )
+    throw new CliError('Use skill install [--target agents|claude] [--project] [--dir PATH] [--force].');
+  const target = flags.target ?? 'agents';
+  if (!['agents', 'claude'].includes(target)) throw new CliError('--target must be agents or claude.');
+  if (flags.dir !== undefined && (flags.project || flags.target))
+    throw new CliError('--dir cannot be combined with --project or --target.');
+  const folder = target === 'claude' ? '.claude' : '.agents';
+  const root = flags.dir
+    ? resolve(flags.dir)
+    : join(flags.project ? io.cwd : io.home, folder, 'skills');
+  const destination = join(root, 'instoryview');
+  const exists = await stat(destination).then(
+    () => true,
+    () => false,
+  );
+  if (exists && !flags.force)
+    throw new CliError(
+      `${destination} already exists. Compare it with your copy, then rerun with --force to replace it.`,
+    );
+  await mkdir(root, { recursive: true });
+  await cp(SKILL_SOURCE, destination, { recursive: true, force: true });
+  const result = { installed: true, version: VERSION, path: destination };
+  io.stdout(
+    json
+      ? `${JSON.stringify(result)}\n`
+      : `Installed the Instoryview Skill at ${destination}.\nRestart your assistant if it does not list the Skill yet. The Skill contains no credentials; connect with MCP or run instoryview auth login.\n`,
+  );
+  return 0;
+}
+
 export async function run(args, options = {}) {
   const io = {
     env: options.env ?? process.env,
@@ -363,6 +404,8 @@ export async function run(args, options = {}) {
     remember: options.remember ?? rememberQuery,
     prompt: options.prompt ?? hiddenPrompt,
     platform: options.platform ?? process.platform,
+    home: options.home ?? homedir(),
+    cwd: options.cwd ?? process.cwd(),
   };
   let json = args.includes('--json');
   try {
@@ -376,6 +419,7 @@ export async function run(args, options = {}) {
       io.stdout(HELP);
       return 0;
     }
+    if (positionals[0] === 'skill') return await installSkill(positionals, flags, io, json);
     const url = baseUrl(io.env.INSTORYVIEW_API_URL ?? DEFAULT_URL);
     if (positionals[0] === 'auth') {
       if (

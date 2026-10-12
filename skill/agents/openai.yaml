@@ -1,0 +1,4 @@
+interface:
+  display_name: 'Instoryview'
+  short_description: 'Read Instagram snapshots and tracked changes'
+  default_prompt: 'Use $instoryview to show my tracked accounts and their latest available follower snapshots.'

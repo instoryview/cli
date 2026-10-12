@@ -6,11 +6,14 @@ Requires Node.js 20 or newer.
 npm install --global instoryview
 instoryview --version
 instoryview auth login
+instoryview skill install   # optional: install the assistant Skill
 instoryview tracking list
 instoryview followers alice --json
 ```
 
 `auth login` stores a verified Key in the macOS System Keychain. Linux, Windows, containers, and CI use `INSTORYVIEW_API_KEY` from their environment or secret manager. No plaintext credential file is created. `auth status` validates an existing credential through the tracking read endpoint. `auth logout` deletes the local Keychain credential; unset environment credentials separately and revoke the Key on the website to disable it everywhere.
+
+`skill install` copies the bundled Skill to `~/.agents/skills/instoryview` (`--target claude` for `~/.claude/skills`, `--project` for the current directory, `--dir PATH` for anywhere) and refuses to overwrite an existing copy unless you pass `--force`. It needs no credentials.
 
 Read commands: `tracking list`, `account USERNAME`, `followers USERNAME`, `following USERNAME`, and `changes USERNAME`. These only read existing data. Missing data does not trigger a paid collection. Lists return one page; pass `--cursor` explicitly to request another. `tracking list --include-archived` includes retained archived records. Changes default to the last seven calendar days in UTC; use paired `--from` / `--to`, `--timezone`, and `--list following` when needed.
 
